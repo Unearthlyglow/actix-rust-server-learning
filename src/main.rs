@@ -149,7 +149,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(Files::new("/static", "static").show_files_listing())
             .app_data(handlebars_ref.clone())
+            .service(Files::new("/pictures", "./static/root").index_file("pictures.html"))
             .route("/", web::get().to(index))
+            .route("/pictures", web::get().to(index))
             .app_data(counter.clone()) // <- register the created data
             .route("/sharedstate", web::get().to(shared_state))
             .app_data(web::Data::new(AppState {
