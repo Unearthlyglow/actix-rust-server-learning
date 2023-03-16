@@ -49,7 +49,8 @@
 //----
 
 use actix_files::Files;
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::http::StatusCode;
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, Result};
 use handlebars::Handlebars;
 use serde_json::json;
 use std::sync::Mutex;
@@ -60,6 +61,13 @@ struct AppState {
 
 struct AppStateWithCounter {
     counter: Mutex<i32>, // <- Mutex is necessary to mutate safely across threads
+}
+
+//404 Page Example
+async fn not_found() -> Result<HttpResponse> {
+    Ok(HttpResponse::build(StatusCode::NOT_FOUND)
+        .content_type("text/html; charset=utf-8")
+        .body("<h1>Error 404</h1>"))
 }
 
 #[get("/")]
@@ -162,6 +170,8 @@ async fn main() -> std::io::Result<()> {
             .service(hello)
             //example of a manual route with the .route() method.
             .route("/hey", web::get().to(manual_hello))
+            //Implementing 404 Page, also see fn 'not_found'. 
+            .default_service(web::route().to(not_found)) 
     })
     .bind(("127.0.0.1", 8090))?
     .run()
