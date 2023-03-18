@@ -95,11 +95,6 @@ async fn apples() -> impl Responder {
     HttpResponse::Ok().body("Where are all of the apples, people?")
 }
 
-//How do I get a route to the index.html file?
-async fn home() -> impl Responder {
-    "index.html"
-}
-
 async fn shared_state(data: web::Data<AppStateWithCounter>) -> String {
     let mut counter = data.counter.lock().unwrap(); // <- get counter's MutexGuard
     *counter += 1; // <- access counter inside MutexGuard
@@ -170,8 +165,8 @@ async fn main() -> std::io::Result<()> {
             .service(hello)
             //example of a manual route with the .route() method.
             .route("/hey", web::get().to(manual_hello))
-            //Implementing 404 Page, also see fn 'not_found'. 
-            .default_service(web::route().to(not_found)) 
+            //Implementing 404 Page, also see fn 'not_found'.
+            .default_service(web::route().to(not_found))
     })
     .bind(("127.0.0.1", 8090))?
     .run()
